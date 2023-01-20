@@ -18,7 +18,7 @@ lead <- wiki %>% html_table()
 lead <- lead[[2]]
 lead$Portrait <- NULL
 colnames(lead) <- c("Name","Country","Office","StartDate","EndDate","TermLength","HeadOfState","ExecutiveOrNot")
-leadex <- lead# %>% filter(ExecutiveOrNot == "Executive")
+leadex <- lead %>% filter(ExecutiveOrNot == "Executive")
 leadexinc <- leadex %>% filter(EndDate == "Incumbent")
 leadexend <- leadex %>% filter(EndDate != "Incumbent")
 leadexend$EndDate <- gsub("\\(assassinated\\)","",leadexend$EndDate)
@@ -149,3 +149,16 @@ t.test(x=neighbour_data2$DeathDiff,mu=0,alternative = "l")
 # Deaths: t = -0.7557, df = 12, p-value = 0.2322
 # MeanCaseDiff SECaseDiff
 #    -7401.615   1945.189
+
+csum <- covid_date %>% group_by(FemaleLeader) %>% dplyr::summarise(DeathsPerMil = mean(TotalDeathsPerMil),
+                                                           TotalDeaths = mean(TotalDeaths),
+                                                           TotalCases = mean(TotalCases),
+                                                           CasesPerMil = mean(TotalCasesPerMil),
+                                                           SDCases = sd(TotalCases,na.rm = T),
+                                                           SDDeaths = sd(TotalDeaths,na.rm=T),
+                                                           SampleSize = length(unique(location)),
+                                                           SDDeathMil = sd(TotalDeathsPerMil),
+                                                           SDCasesMil = sd(TotalCasesPerMil))
+sd(covid_date$TotalDeaths[covid_date$FemaleLeader==0])
+
+write.csv(csum,"summary2.csv",row.names = F)
